@@ -4,9 +4,11 @@ import pandas as pd
 import tensorflow as tf
 import keras
 
-label = "loan_status"
-input_filename = "loan-preprocessed-test.csv"
-model_filename = "loan-model.keras"
+
+
+label = "Premium Amount"
+input_filename = "insurance_preprocessed_test.csv"
+model_filename = "insurance_model.keras"
 proba_filename = "predictions_proba.csv"
 predictions_filename = "predictions.csv"
 
@@ -33,7 +35,7 @@ dataset = tf.data.Dataset.from_tensors(X)
 #
 # Prep the dataset for efficient processing
 #
-BATCH_SIZE = 32
+BATCH_SIZE = 2048
 dataset = dataset.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
 

@@ -5,11 +5,11 @@ import tensorflow as tf
 import keras
 import matplotlib.pyplot as plt
 
-label = "loan_status"
-input_filename = "loan-preprocessed-train.csv"
-model_filename = "loan-model.keras"
-train_ratio = 0.80
-learning_curve_filename = "loan-learning-curve.png"
+label = "Premium Amount"
+input_filename = "insurance_preprocessed_train.csv"
+model_filename = "insurance_model.keras"
+train_ratio = 0.70
+learning_curve_filename = "insurance_learning_curve.png"
 #
 # Load the training dataframe, separate into X/y
 #
@@ -52,7 +52,7 @@ dataset_size       = dataset.cardinality().numpy()
 train_size         = int(train_ratio * dataset_size)
 validate_size      = dataset_size - train_size
 train_dataset      = dataset.take(train_size)
-validation_dataset = dataset.skip(train_size)
+validation_dataset = dataset.skip(validate_size)
 
 #
 # Cause the datasets to shuffle, internally
@@ -65,7 +65,7 @@ validation_dataset = validation_dataset.shuffle(buffer_size=validate_size)
 # Efficiency benefits.
 # Training differences.
 #
-BATCH_SIZE = 32
+BATCH_SIZE = 2048
 train_dataset      = train_dataset.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 validation_dataset = validation_dataset.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
@@ -74,21 +74,28 @@ validation_dataset = validation_dataset.batch(BATCH_SIZE).prefetch(tf.data.AUTOT
 #
 # Build the model
 #
-tf.random.set_seed(42)
+tf.random.set_seed(800815)
 model = keras.Sequential()
 model.add(keras.layers.Input(shape=input_shape))
-model.add(keras.layers.Dense(100, activation="relu"))
-model.add(keras.layers.Dense(1, activation="sigmoid"))
+model.add(keras.layers.Dense(256, activation="leaky_relu"))
+model.add(keras.layers.Dense(256, activation="leaky_relu"))
+model.add(keras.layers.Dense(128, activation="leaky_relu"))
+model.add(keras.layers.Dense(128, activation="leaky_relu"))
+model.add(keras.layers.Dense(64, activation="leaky_relu"))
+model.add(keras.layers.Dense(64, activation="leaky_relu"))
+model.add(keras.layers.Dense(32, activation="leaky_relu"))
+model.add(keras.layers.Dense(32, activation="leaky_relu"))
+model.add(keras.layers.Dense(1, activation="linear"))
 #print(model.summary())
 #print(model.layers[1].get_weights())
 
 #
 # Compile the model
 #
-loss = "binary_crossentropy"
+loss = "mean_squared_error"
 model.compile(loss=loss,
-              optimizer=keras.optimizers.SGD(learning_rate=0.1),
-              metrics=["AUC"])
+              optimizer=keras.optimizers.Nadam(learning_rate=0.001),
+              metrics=["R2Score"])
 
 
 #

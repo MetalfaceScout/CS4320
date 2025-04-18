@@ -22,7 +22,7 @@ def make_categorical_feature_pipeline():
     items = []
     items.append(("categorical-features-only", DataFrameSelector(do_predictors=True, do_numerical=False)))
     items.append(("missing-data", sklearn.impute.SimpleImputer(strategy="constant", fill_value="NULL")))
-    items.append(("encode-category-bits", sklearn.preprocessing.OneHotEncoder(categories='auto', handle_unknown='ignore')))
+    items.append(("encode-category-bits", sklearn.preprocessing.OneHotEncoder(max_categories=5, categories='auto', handle_unknown='infrequent_if_exist')))
     categorical_pipeline = sklearn.pipeline.Pipeline(items)
     return categorical_pipeline
 
@@ -100,23 +100,23 @@ def preprocess_file(input_filename, output_filename, pipeline_filename, label):
     return
 
 def main_train():
-    data_filename = "loan-train.csv"
-    out_filename = "loan-preprocessed-train.csv"
-    pipeline_filename = "loan-preprocessor.joblib"
-    label = "loan_status"
+    data_filename = "insurance_train.csv"
+    out_filename = "insurance_preprocessed_train.csv"
+    pipeline_filename = "insurance_train_preprocessor.joblib"
+    label = "Premium Amount"
     preprocess_file(data_filename, out_filename, pipeline_filename, label)
     return
 
 def main_test():
-    data_filename = "loan-test.csv"
-    out_filename = "loan-preprocessed-test.csv"
-    pipeline_filename = "loan-preprocessor.joblib"
-    label = "loan_status"
+    data_filename = "insurance_test.csv"
+    out_filename = "insurance_preprocessed_test.csv"
+    pipeline_filename = "insurance_test_preprocessor.joblib"
+    label = "Premium Amount"
     preprocess_file(data_filename, out_filename, pipeline_filename, label)
     return
 
 def main():
-    # main_train()
+    main_train()
     main_test()
 
 if __name__ == "__main__":
